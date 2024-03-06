@@ -1,0 +1,1 @@
+export {photoBlock} from './photoBlock'
