@@ -1,5 +1,16 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# mock
+src/05_shared/mock/
+
+# idea
+.idea
+
+# nginx
+/web/carrotocr.crt
+/web/carrotocr.key
+/web/carrotocr.pem
+
 # dependencies
 /node_modules
 /.pnp
@@ -17,6 +28,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.env
 
 npm-debug.log*
 yarn-debug.log*

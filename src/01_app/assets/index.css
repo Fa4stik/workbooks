@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .white-border {
+        @apply border-solid border-[2px] border-mainWhite;
+    }
+
+    .white-border-l {
+        @apply border-solid border-l-[2px] border-l-mainWhite;
+    }
+
+    .white-border-r {
+        @apply border-solid border-r-[2px] border-r-mainWhite;
+    }
+
+    .white-border-b {
+        @apply border-solid border-b-[2px] border-b-mainWhite;
+    }
+
+    .white-border-t {
+        @apply border-solid border-b-[2px] border-b-mainWhite;
+    }
+}

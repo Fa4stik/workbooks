@@ -41,7 +41,7 @@ const theme = createTheme({
     },
 });
 
-export const InputThemeProvider: React.FC<InputThemeProviderProps> = ({
+export const WhiteInputProvider: React.FC<InputThemeProviderProps> = ({
     children
 }) => {
     
