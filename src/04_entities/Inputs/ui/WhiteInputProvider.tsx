@@ -1,13 +1,13 @@
-import React from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {createTheme, ThemeProvider} from "@mui/material";
 
 type InputThemeProviderProps = {
     children: React.ReactNode
+    borderFocusColor: string
 }
 
-const theme = createTheme({
+const useCustomTheme = (borderFocusColor: string) => useMemo(() => createTheme({
     components: {
-        // Переопределение стилей для всех экземпляров TextField
         MuiTextField: {
             defaultProps: {
                 variant: 'outlined',
@@ -23,7 +23,7 @@ const theme = createTheme({
                             borderColor: 'white', // Цвет обводки при наведении
                         },
                         '&.Mui-focused fieldset': {
-                            borderColor: 'white', // Цвет обводки при фокусе
+                            borderColor: borderFocusColor, // Динамический цвет обводки при фокусе
                         },
                     },
                     '& .MuiInputBase-input': {
@@ -39,12 +39,15 @@ const theme = createTheme({
             },
         },
     },
-});
+}), [borderFocusColor]); // Пересоздавать тему только при изменении borderFocusColor
 
 export const WhiteInputProvider: React.FC<InputThemeProviderProps> = ({
-    children
+    children,
+    borderFocusColor
 }) => {
-    
+
+    const theme = useCustomTheme(borderFocusColor)
+
     return (
         <ThemeProvider theme={theme}>
             {children}

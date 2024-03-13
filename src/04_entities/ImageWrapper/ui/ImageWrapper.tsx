@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {TBbox} from "@/03_features/PhotoBlock";
 import {ImageMask} from "@/04_entities/ImageWrapper/ui/ImageMask";
 import {LoadingDotRight} from "@/05_shared/ui/loading";
@@ -6,7 +6,12 @@ import {animated} from "react-spring";
 import {useMyDrag} from "@/04_entities/ImageWrapper/lib/useMyDrag";
 import {useMyWheel} from "@/04_entities/ImageWrapper/lib/useMyWheel";
 import {TBounds} from "@/04_entities/ImageWrapper/model/dragTypes";
-import {MAX_SIZE_SCALE_IMG, MIN_SIZE_SCALE_IMG, SCALE_FACTOR} from "@/04_entities/ImageWrapper/model/constants";
+import {
+    MAX_SIZE_SCALE_IMG,
+    MIN_SIZE_SCALE_IMG,
+    SCALE_FACTOR,
+    SPEED_ZOOM
+} from "@/04_entities/ImageWrapper/model/constants";
 import {updateBounds} from "@/04_entities/ImageWrapper/lib/updateBounds";
 
 type ImageWrapperProps = {
@@ -52,6 +57,8 @@ export const ImageWrapper: React.FC<ImageWrapperProps> = ({
             scaleFactor,
             setIsImmediateDrag,
             imgBlockRef,
+            origImgRef,
+            parentRef,
             apiDrag,
             setBounds,
             updateBounds
@@ -66,37 +73,55 @@ export const ImageWrapper: React.FC<ImageWrapperProps> = ({
             imgBlockRef.current!.style.width = `${width}px`;
             imgBlockRef.current!.style.height = `${height}px`;
 
-            // setImgRect({x1: 0, y1: 0, width, height})
-            // setOrigSizes({x1: 0, y1: 0, width, height})
-
             // Вычисление scale для конкретного изображения
             const baseSize = Math.max(myParSizes.width, myParSizes.height);
             const normalizedScaleFactor = Math.sqrt((width * height) / baseSize);
-            // setScaleFactor(speedZoom / normalizedScaleFactor);
+            setScaleFactor(SPEED_ZOOM / normalizedScaleFactor);
 
             if (width > height) {
-                const newScale = myParSizes.width / width
-                // apiWheel.start({
-                //     scale: newScale, onResolve: () => {
-                //         updateBounds(newScale)
-                //     },
-                //     immediate: true
-                // })
-                // setMinSizeScaleImg(myParSizes.width/2 / width)
+                const newScale = myParSizes.width / (width*2)
+                apiWheel.start({
+                    scale: newScale, onResolve: () => {
+                        updateBounds(
+                            newScale,
+                            [width, height],
+                            [myParSizes.width, myParSizes.height],
+                            setBounds
+                        )
+                    },
+                    immediate: true
+                })
+                setMinSizeScaleImg(myParSizes.width/2 / width)
             }
 
             if (width <= height) {
-                const newScale = myParSizes.height / height
-                // apiWheel.start({
-                //     scale: newScale, onResolve: () => {
-                //         updateBounds(newScale)
-                //     },
-                //     immediate: true
-                // })
-                // setMinSizeScaleImg(myParSizes.height/2 / height)
+                const newScale = myParSizes.height / (height*2)
+                apiWheel.start({
+                    scale: newScale, onResolve: () => {
+                        updateBounds(
+                            newScale,
+                            [width, height],
+                            [myParSizes.width, myParSizes.height],
+                            setBounds
+                        )
+                    },
+                    immediate: true
+                })
+                setMinSizeScaleImg(myParSizes.height/2 / height)
             }
         }
     }
+
+    // Движение изображения к границам, когда оно от него сильно отходит
+    useEffect(() => {
+        const {left, top, bottom, right} = bounds
+
+        x.get() > right && apiDrag.start({x: right, immediate: isImmediateDrag})
+        x.get() < left && apiDrag.start({x: left, immediate: isImmediateDrag})
+
+        y.get() > bottom && apiDrag.start({y: bottom, immediate: isImmediateDrag})
+        y.get() < top && apiDrag.start({y: top, immediate: isImmediateDrag})
+    }, [bounds]);
 
     return (
         <div className="flex-1 flex overflow-hidden relative"
@@ -112,6 +137,7 @@ export const ImageWrapper: React.FC<ImageWrapperProps> = ({
                           ref={imgBlockRef}
                           style={{
                               x, y,
+                              transform: scale.to(s => `scale(${s})`),
                               transformOrigin: 'center center',
                               touchAction: 'none'
                           }}

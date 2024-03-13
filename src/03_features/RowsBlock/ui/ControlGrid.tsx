@@ -11,7 +11,7 @@ export const ControlGrid: React.FC<ControlGridProps> = ({
     const {fields, setActivePage, setActiveRow, activePage, activeRow} = useFieldsStore()
 
     return (
-        <div className="flex w-1/6 white-border-l rounded-xl divide-x-2 divide-solid">
+        <div className="flex w-1/6 white-border-l rounded-xl divide-x-2 divide-solid bg-mainDark">
             <RowsBlock title={'Номер строки'}
                        setGrid={setActiveRow}
                        activeId={activeRow}

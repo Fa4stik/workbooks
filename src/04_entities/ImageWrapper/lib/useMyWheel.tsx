@@ -10,6 +10,8 @@ type useMyWheelProps = {
     scaleFactor: number,
     setIsImmediateDrag: React.Dispatch<React.SetStateAction<boolean>>,
     imgBlockRef: React.RefObject<HTMLDivElement>,
+    origImgRef: React.RefObject<HTMLImageElement>,
+    parentRef: React.RefObject<HTMLDivElement>
     apiDrag: SpringRef<{ x: number, y: number }>,
     setBounds: React.Dispatch<React.SetStateAction<TBounds>>
     updateBounds: typeof updateBounds
@@ -21,6 +23,8 @@ export const useMyWheel = ({
     scaleFactor,
     setIsImmediateDrag,
     imgBlockRef,
+    origImgRef,
+    parentRef,
     apiDrag,
     updateBounds,
     setBounds,
@@ -36,8 +40,10 @@ export const useMyWheel = ({
         setIsImmediateDrag(false)
         const {top, left, width, height} =
             imgBlockRef.current!.getBoundingClientRect()
+        const {naturalWidth: origW, naturalHeight: origH} =
+            origImgRef.current!
         const {width: parW, height: parH} =
-            imgBlockRef.current!.parentElement!.getBoundingClientRect()
+            parentRef.current!.getBoundingClientRect()
 
         const newScale = scale.get() - dy * scaleFactor;
 
@@ -79,7 +85,7 @@ export const useMyWheel = ({
 
                 updateBounds(
                     result.value.scale,
-                    [width, height],
+                    [origW, origH],
                     [parW, parH],
                     setBounds
                 )

@@ -13,7 +13,7 @@ export const buildPlugins = ({public: publicPath, html, analyzer, isDev}: TBuild
     const plugins: TPlugins = [
         new HtmlWebpackPlugin({
             template: html,
-            favicon: path.resolve(publicPath, 'favicon.ico')
+            favicon: path.resolve(publicPath, 'favicon.ico'),
         }),
         new ForkTsCheckerWebpackPlugin(),
         new webpack.DefinePlugin({
