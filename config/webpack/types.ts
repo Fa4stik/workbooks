@@ -10,5 +10,6 @@ export type TBuildOptions = TEnvOptions & {
     output: string,
     html: string,
     src: string,
-    public: string
+    public: string,
+    env: string
 }

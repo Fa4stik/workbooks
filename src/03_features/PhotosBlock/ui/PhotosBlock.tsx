@@ -29,7 +29,7 @@ export const PhotosBlock: React.FC<PhotosBlockProps> = ({
                             <img src={path} alt="" className={`rounded-xl ease-in-out transition-all duration-500
                             ${activePhoto.photoUid === photoUid && activePhoto.chunkUid === chunkUid && 
                             'shadow-lg shadow-sky-200/[0.4]'}`}/>
-                            <p className="font-inter text-mainWhite">name image {photoUid}</p>
+                            <p className="font-inter text-mainWhite">Image №{photoUid}</p>
                         </div>
                     ))
                 )
