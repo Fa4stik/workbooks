@@ -54,7 +54,7 @@ export const WhiteTextField: React.FC<WhiteTextFieldProps> = ({
             setBorderFocusColor('orange')
         }
 
-    }, [isRecording]);
+    }, [isRecording, dataRecognize]);
 
     return (
         <WhiteInputProvider borderFocusColor={borderFocusColor}>

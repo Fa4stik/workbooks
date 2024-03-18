@@ -4,8 +4,9 @@ import {ENameField, ETypeField, useFieldsStore} from "@/05_shared/model";
 import {WhiteDatePicker} from "@/04_entities/DatePicker";
 import dayjs from "dayjs";
 import {BlueButton, GreenButton} from "@/04_entities/Buttons";
-import {useWebSpeechRecognition} from "@/04_entities/WebSpeechRecognition";
 import {useCreateExcelFromJson} from "@/04_entities/ApiData";
+import {useWebRecordAudio, useWebSpeechRecognition} from "@/04_entities/WebMedia";
+import {useSpeechToText} from "@/04_entities/ApiAiModels";
 
 type ContentBlockProps = {}
 
@@ -16,13 +17,22 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
     const {fields, setContent, activePage, activeRow,
         setActiveRow } = useFieldsStore()
 
-    const {isRecognizing, data: speechToTextData, isAvailable,
-        startRecognize, stopRecognize} = useWebSpeechRecognition()
+    // const {isRecognizing, data: speechToTextData, isAvailable,
+    //     startRecognize, stopRecognize} = useWebSpeechRecognition()
 
-    const {mutate} = useCreateExcelFromJson()
+    const {isAvailable, isRecording, data: audioBlob,
+        stopRecord, startRecord} = useWebRecordAudio()
+
+    const {mutate: mutateConvertToExcel} = useCreateExcelFromJson()
+    const {mutate: mutateSpeechToText, data: dataSpeechToText,
+        isSuccess: isSuccessSpeechToText} =
+        useSpeechToText()
+
 
     const [isPressedCltr, setIsPressedCltr] =
         useState<boolean>(false)
+    const [speechToTextData, setSpeechToTextData] =
+        useState<string>('')
 
     useEffect(() => {
         window.onkeydown = e => {
@@ -39,16 +49,40 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
             return
 
         if (isPressedCltr) {
-            startRecognize()
+            // startRecognize()
+            startRecord()
         }
 
         if (!isPressedCltr) {
-            stopRecognize()
+            // stopRecognize()
+            stopRecord()
         }
     }, [isPressedCltr]);
 
+    useEffect(() => {
+        if (audioBlob.size <= 0)
+            return
+
+        mutateSpeechToText(audioBlob)
+    }, [audioBlob]);
+
+    useEffect(() => {
+        if (!dataSpeechToText)
+            return
+
+        if (!isSuccessSpeechToText)
+            return;
+
+        setSpeechToTextData(dataSpeechToText.data.result.join(''))
+
+        setTimeout(() => {
+            setSpeechToTextData('')
+        }, 500)
+
+    }, [isSuccessSpeechToText]);
+
     const handleDownloadExcel = () => {
-        mutate(fields)
+        mutateConvertToExcel(fields)
     };
 
     return (
@@ -57,7 +91,8 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
                 {Object.entries(fields[activePage][activeRow]).map(([fKey, field], id, array) =>
                     field.type === ETypeField.Input && (
                         <WhiteTextField label={field.name} key={fKey} id={fKey}
-                                        isRecording={isRecognizing}
+                                        // isRecording={isRecognizing}
+                                        isRecording={isRecording}
                                         value={field.content ?? ''}
                                         fKey={fKey as keyof typeof ENameField}
                                         dataRecognize={speechToTextData}
@@ -87,7 +122,8 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
                     field.type === ETypeField.Textarea && (
                         <WhiteTextField label={field.name} key={fKey} multiline
                                         id={fKey}
-                                        isRecording={isRecognizing}
+                                        // isRecording={isRecognizing}
+                                        isRecording={isRecording}
                                         width={'33%'} minRows={3}
                                         nextId={array
                                             .slice(id+1)

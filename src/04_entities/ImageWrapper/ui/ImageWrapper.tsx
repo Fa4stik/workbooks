@@ -121,6 +121,7 @@ export const ImageWrapper: React.FC<ImageWrapperProps> = ({
 
         y.get() > bottom && apiDrag.start({y: bottom, immediate: isImmediateDrag})
         y.get() < top && apiDrag.start({y: top, immediate: isImmediateDrag})
+
     }, [bounds]);
 
     return (
@@ -138,7 +139,6 @@ export const ImageWrapper: React.FC<ImageWrapperProps> = ({
                           style={{
                               x, y,
                               transform: scale.to(s => `scale(${s})`),
-                              transformOrigin: 'center center',
                               touchAction: 'none'
                           }}
                           {...bindDrag()}

@@ -34,6 +34,9 @@ export const updateBounds = (
 
     if (parW >= imgSizesW) {
         const newRight = (parW - imgSizesW) / 2 + startX
+        // const newRight = -293
+        console.log('parW, imgSizesW, origImgW, startX, scale')
+        console.log(parW, imgSizesW, origImgW, startX, scale)
         setBounds(prevState => ({
             ...prevState,
             left: newRight,
@@ -70,8 +73,3 @@ export const updateBounds = (
         }))
     }
 }
-
-// const updateBounds = (scale: number) =>
-//     currRotate % 180 === 0
-//         ? countNewBounds(scale)
-//         : countNewBounds(scale, true)

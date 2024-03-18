@@ -1,0 +1,1 @@
+export {useSpeechToText} from './lib/useSpeechToText'

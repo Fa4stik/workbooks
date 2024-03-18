@@ -1,1 +1,0 @@
-export {useWebSpeechRecognition} from './lib/useWebSpeechRecognition'

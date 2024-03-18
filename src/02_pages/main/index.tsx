@@ -27,8 +27,8 @@ export const Main: React.FC<MainProps> = ({
                              setActivePhoto={setActivePhoto}
                 />
             )}
-            <div className="flex flex-col flex-1 divide-y-2 divide-solid">
-                <div className="w-full h-[60%] flex">
+            <div className="flex flex-col flex-1 divide-y-2 divide-solid relative overflow-hidden">
+                <div className="flex-1 h-[60%] flex">
                     <PhotoBlock photos={photos}
                                 activePhoto={activePhoto}
                                 setActivePhoto={setActivePhoto}
