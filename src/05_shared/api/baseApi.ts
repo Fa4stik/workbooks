@@ -1,7 +1,5 @@
 import axios from 'axios'
 
-// '/api'
-
 export const $api = axios.create({
-    baseURL: (process.env.REACT_APP_SERVER_PATH ?? window.location.origin)
+    baseURL: (process.env.REACT_APP_SERVER_PATH ?? window.location.origin) + '/api'
 })

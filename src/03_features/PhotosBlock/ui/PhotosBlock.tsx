@@ -1,27 +1,21 @@
-import React, {useEffect} from 'react';
-import {mockImages} from "@/05_shared/mock";
-import {TActivePhoto, TChunks, usePhotosStore} from "@/05_shared/model";
+import React from 'react';
+import {usePhotosStore} from "@/05_shared/lib";
 
 type PhotosBlockProps = {
-    photos: TChunks
-    activePhoto: TActivePhoto
-    setActivePhoto: React.Dispatch<React.SetStateAction<TActivePhoto>>
 }
 
 export const PhotosBlock: React.FC<PhotosBlockProps> = ({
-    activePhoto,
-    setActivePhoto,
-    photos
 }) => {
 
-    // const {photos} = usePhotosStore()
+    const {photos, activePhoto, setActivePhoto} =
+        usePhotosStore()
 
     return (
         <div className="w-1/6 flex flex-col px-8 py-4 white-border-r rounded-xl gap-6 overflow-y-auto">
             {Object.entries(photos)
                 .flatMap(([chunkUid, value]) => Object.entries(value)
                     .map(([photoUid, {path}]) => (
-                        <div className={`flex-1 flex flex-col justify-center items-center select-none`}
+                        <div className={`flex flex-col justify-center items-center select-none`}
                              key={photoUid+chunkUid}
                             onClick={() => setActivePhoto({chunkUid, photoUid})}
                         >

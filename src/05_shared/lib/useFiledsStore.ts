@@ -1,7 +1,8 @@
 import {create} from "zustand";
-import {devtools, persist} from "zustand/middleware";
+import {createJSONStorage, devtools, persist, StateStorage} from "zustand/middleware";
 import {ENameField, TFields} from "@/05_shared/model/typesField";
-import {initialFields} from './initialFieldStore'
+import {initialFields} from '../model/initialFieldStore'
+import {createIndexDbStore} from "@/05_shared/lib/indexDBStorage";
 
 type State = {
     activePage: number
@@ -14,6 +15,10 @@ type Actions = {
     setActivePage: (activePage: number) => void
     setActiveRow: (activeRow: number) => void
 }
+
+const storageName = 'useFieldsStore'
+
+const storage = createIndexDbStore(storageName + 'DB', storageName)
 
 export const useFieldsStore = create<State & Actions>()(
     devtools(
@@ -43,7 +48,10 @@ export const useFieldsStore = create<State & Actions>()(
                     updateFields[activePage].push(JSON.parse(JSON.stringify(initialFields)))
                     return {updateFields, activeRow}
                 }),
-            }), {name: 'useFieldsStore'}
+            }), {
+                name: storageName,
+                storage: createJSONStorage(() => storage)
+            }
         )
     )
 )

@@ -3,27 +3,16 @@ import {ImageWrapper} from "@/04_entities/ImageWrapper";
 import {mockImages} from "@/05_shared/mock";
 import {EmptyImage} from "@/03_features/PhotoBlock";
 import {TActivePhoto, TChunks} from "@/05_shared/model";
+import {usePhotosStore} from "@/05_shared/lib";
 
 type PhotoBlockProps = {
-    photos: TChunks
-    setPhotos: React.Dispatch<React.SetStateAction<TChunks>>
-    activePhoto: TActivePhoto
-    setActivePhoto: React.Dispatch<React.SetStateAction<TActivePhoto>>
 }
 
 export const PhotoBlock: React.FC<PhotoBlockProps> = ({
-    activePhoto,
-    photos,
-    setActivePhoto,
-    setPhotos
 }) => {
 
-    const [srcImg, setSrcImg] =
-        useState<string>('')
-
-    useEffect(() => {
-        setSrcImg(photos[activePhoto?.chunkUid]?.[activePhoto?.photoUid]?.path)
-    }, [activePhoto]);
+    const {activePhoto, photos, setActivePhoto} =
+        usePhotosStore()
 
     useEffect(() => {
         if (!('photoUid' in activePhoto) && Object.keys(photos).length > 0) {
@@ -38,15 +27,11 @@ export const PhotoBlock: React.FC<PhotoBlockProps> = ({
 
     if (Object.keys(photos).length <= 0)
         return (
-            <EmptyImage activePhoto={activePhoto}
-                        photos={photos}
-                        setActivePhoto={setActivePhoto}
-                        setPhotos={setPhotos}
-            />
+            <EmptyImage/>
         )
 
     return (
-        <ImageWrapper bboxes={[]} srcImg={srcImg}
+        <ImageWrapper bboxes={[]} srcImg={photos[activePhoto.chunkUid][activePhoto.photoUid].path}
                       onClickBox={(word) => console.log(word)}
                       isLoading={false}/>
     );

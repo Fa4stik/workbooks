@@ -1,5 +1,3 @@
 export type {TField, TFields} from './typesField'
 export type {TChunks, TActivePhoto} from './typesPhotos'
 export {ENameField, ETypeField} from './typesField'
-export {useFieldsStore} from './useFiledsStore'
-export {usePhotosStore} from './usePhotosStore'

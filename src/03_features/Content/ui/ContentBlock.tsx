@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {WhiteTextField} from "@/04_entities/Inputs";
-import {ENameField, ETypeField, useFieldsStore} from "@/05_shared/model";
+import {ENameField, ETypeField} from "@/05_shared/model";
 import {WhiteDatePicker} from "@/04_entities/DatePicker";
 import dayjs from "dayjs";
 import {BlueButton, GreenButton} from "@/04_entities/Buttons";
 import {useCreateExcelFromJson} from "@/04_entities/ApiData";
 import {useWebRecordAudio, useWebSpeechRecognition} from "@/04_entities/WebMedia";
 import {useSpeechToText} from "@/04_entities/ApiAiModels";
+import {useFieldsStore} from "@/05_shared/lib";
 
 type ContentBlockProps = {}
 

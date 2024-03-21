@@ -8,3 +8,7 @@ interface Window {
     SpeechRecognition: typeof SpeechRecognition;
     webkitSpeechRecognition: typeof SpeechRecognition;
 }
+
+export interface FooModel {
+    someProp: string;
+}

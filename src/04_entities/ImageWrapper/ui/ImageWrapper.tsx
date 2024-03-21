@@ -134,23 +134,25 @@ export const ImageWrapper: React.FC<ImageWrapperProps> = ({
             {isLoading && (
                 <LoadingDotRight/>
             )}
-            <animated.div className={'relative'}
-                          ref={imgBlockRef}
-                          style={{
-                              x, y,
-                              transform: scale.to(s => `scale(${s})`),
-                              touchAction: 'none'
-                          }}
-                          {...bindDrag()}
-                          {...bindWheel()}
-            >
-                <img src={srcImg}
-                     ref={origImgRef}
-                     onLoad={handleImageLoad}
-                     className="h-full max-h-none max-w-none absolute z-0"
-                     alt="MyImg"
-                />
-            </animated.div>
+            <div>
+                <animated.div className={'relative'}
+                              ref={imgBlockRef}
+                              style={{
+                                  x, y,
+                                  transform: scale.to(s => `scale(${s})`),
+                                  touchAction: 'none'
+                              }}
+                              {...bindDrag()}
+                              {...bindWheel()}
+                >
+                    <img src={srcImg}
+                         ref={origImgRef}
+                         onLoad={handleImageLoad}
+                         className="max-h-none max-w-none absolute z-0"
+                         alt="MyImg"
+                    />
+                </animated.div>
+            </div>
         </div>
     );
 };

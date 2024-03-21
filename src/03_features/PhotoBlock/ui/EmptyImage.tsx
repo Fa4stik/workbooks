@@ -1,50 +1,33 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {photoBlock} from "@/05_shared/ui/icons";
-import {TActivePhoto, TChunks, usePhotosStore} from "@/05_shared/model";
+import {usePhotosStore} from "@/05_shared/lib";
+import {useGetChunkId} from "@/04_entities/ApiData";
+import {useUploadFiles} from "@/04_entities/ApiData/lib/useUploadFiles";
 
 type EmptyImageProps = {
-    photos: TChunks
-    setPhotos: React.Dispatch<React.SetStateAction<TChunks>>
-    activePhoto: TActivePhoto
-    setActivePhoto: React.Dispatch<React.SetStateAction<TActivePhoto>>
 }
 
 export const EmptyImage: React.FC<EmptyImageProps> = ({
-    activePhoto,
-    photos,
-    setActivePhoto,
-    setPhotos
 }) => {
 
     const [isActiveDrag, setIsActiveDrag] =
         useState<boolean>(false)
     const fileRef = useRef<HTMLInputElement>(null)
+    const [chunkId, setChunkId] =
+        useState<number>(0)
 
-    // const {addChunk, addPhoto} = usePhotosStore()
+    const {addChunk, addPhoto, setActivePhoto} = usePhotosStore()
+
+    const { data: fetchChunkId } = useGetChunkId()
+    const { mutate: mutateUploadFiles, paths} =
+        useUploadFiles()
 
     const handleDropFiles = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         setIsActiveDrag(false)
-        const chunkId = Object.keys(photos).length
-        setPhotos(prevState => ({...prevState,
-            [chunkId]: Object.fromEntries(
-                Array.from(e.dataTransfer.files)
-                .map((file, id) => [
-                    id,
-                    {path: URL.createObjectURL(file)}
-                ])
-            )
-        }))
 
-        // addChunk('1')
-        // Array.from(e.dataTransfer.files)
-        //     .forEach((file, id) => {
-        //         addPhoto('1', {
-        //             [id.toString()]: {
-        //                 path: URL.createObjectURL(file)
-        //             }
-        //         })
-        //     })
+        e.dataTransfer.files &&
+            mutateUploadFiles({chunk_id: chunkId, files: e.dataTransfer.files})
     }
 
     const handleChangFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,17 +36,29 @@ export const EmptyImage: React.FC<EmptyImageProps> = ({
         if (!e.target.files)
             return
 
-        const chunkId = Object.keys(photos).length
-        setPhotos(prevState => ({...prevState,
-            [chunkId]: Object.fromEntries(
-                Array.from(e.target.files!)
-                    .map((file, id) => [
-                        id,
-                        {path: URL.createObjectURL(file)}
-                    ])
-            )
-        }))
+
     };
+
+    useEffect(() => {
+        fetchChunkId && fetchChunkId.data &&
+            setChunkId(fetchChunkId.data)
+    }, [fetchChunkId]);
+
+    useEffect(() => {
+        addChunk(chunkId.toString())
+        setActivePhoto({chunkUid: chunkId.toString(), photoUid: "0"})
+    }, [chunkId]);
+
+    useEffect(() => {
+        if (paths.length <= 0)
+            return
+
+        paths.forEach((path, id) => {
+            addPhoto(chunkId.toString(), {
+                [id]: {path}
+            })
+        })
+    }, [paths]);
 
     return (
         <div className="h-full w-full select-none cursor-pointer relative

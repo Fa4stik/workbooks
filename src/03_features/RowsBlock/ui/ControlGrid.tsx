@@ -1,6 +1,6 @@
 import React from 'react';
-import {useFieldsStore} from "@/05_shared/model";
 import {RowsBlock} from "@/03_features/RowsBlock/ui/RowsBlock";
+import {useFieldsStore} from "@/05_shared/lib";
 
 type ControlGridProps = {}
 
@@ -8,7 +8,8 @@ export const ControlGrid: React.FC<ControlGridProps> = ({
 
 }) => {
 
-    const {fields, setActivePage, setActiveRow, activePage, activeRow} = useFieldsStore()
+    const {fields, setActivePage, setActiveRow, activePage, activeRow} =
+        useFieldsStore()
 
     return (
         <div className="flex w-1/6 white-border-l rounded-xl divide-x-2 divide-solid">

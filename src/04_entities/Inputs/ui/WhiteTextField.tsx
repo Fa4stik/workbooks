@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {TextField} from "@mui/material";
 import {WhiteInputProvider} from "@/04_entities/Inputs/ui/WhiteInputProvider";
-import {ENameField, useFieldsStore} from "@/05_shared/model";
+import {ENameField} from "@/05_shared/model";
+import {useFieldsStore} from "@/05_shared/lib";
 
 type WhiteTextFieldProps = {
     id: string
@@ -61,6 +62,7 @@ export const WhiteTextField: React.FC<WhiteTextFieldProps> = ({
             <TextField label={label} multiline={multiline}
                        sx={{width}}
                        id={id}
+                       title={'Текст можно вводить голосом при зажатой клавише Ctrl'}
                        onChange={onChange}
                        minRows={minRows}
                        value={value}
