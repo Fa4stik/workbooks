@@ -6,6 +6,7 @@ import {Loading} from "@/05_shared/ui/loading";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 const queryClient = new QueryClient()
+queryClient.invalidateQueries({queryKey: ['chunk']})
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement

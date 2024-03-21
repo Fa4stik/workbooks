@@ -16,9 +16,9 @@ export const EmptyImage: React.FC<EmptyImageProps> = ({
     const [chunkId, setChunkId] =
         useState<number>(0)
 
-    const {addChunk, addPhoto, setActivePhoto} = usePhotosStore()
+    const {addPhoto, setActivePhoto} = usePhotosStore()
 
-    const { data: fetchChunkId } = useGetChunkId()
+    const { data: fetchChunkId, isSuccess } = useGetChunkId()
     const { mutate: mutateUploadFiles, paths} =
         useUploadFiles()
 
@@ -26,37 +26,32 @@ export const EmptyImage: React.FC<EmptyImageProps> = ({
         e.preventDefault()
         setIsActiveDrag(false)
 
-        e.dataTransfer.files &&
-            mutateUploadFiles({chunk_id: chunkId, files: e.dataTransfer.files})
+        if (e.dataTransfer.files && e.dataTransfer.files.length <= 0)
+            return
+
+        mutateUploadFiles({chunk_id: chunkId, files: e.dataTransfer.files})
     }
 
     const handleChangFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
 
-        if (!e.target.files)
+        if (e.target.files && e.target.files.length <= 0)
             return
 
-
+        mutateUploadFiles({chunk_id: chunkId, files: e.target.files!})
     };
 
     useEffect(() => {
         fetchChunkId && fetchChunkId.data &&
             setChunkId(fetchChunkId.data)
-    }, [fetchChunkId]);
-
-    useEffect(() => {
-        addChunk(chunkId.toString())
-        setActivePhoto({chunkUid: chunkId.toString(), photoUid: "0"})
-    }, [chunkId]);
+    }, [fetchChunkId, isSuccess]);
 
     useEffect(() => {
         if (paths.length <= 0)
             return
 
         paths.forEach((path, id) => {
-            addPhoto(chunkId.toString(), {
-                [id]: {path}
-            })
+            addPhoto({[chunkId+id]: {path}})
         })
     }, [paths]);
 
@@ -82,7 +77,7 @@ export const EmptyImage: React.FC<EmptyImageProps> = ({
             text-3xl font-medium bg-ma transition-all ease-in-out duration-500`}>
                 Перетащите сюда изображения или выберите из папки</p>
             <input type="file" ref={fileRef} className="hidden"
-                   onChange={handleChangFiles} multiple accept="image/*"/>
+                   onChange={handleChangFiles} multiple accept="application/pdf, image/*"/>
         </div>
     );
 };

@@ -50,8 +50,8 @@ const theme = createTheme(
 )
 
 export const WhiteDateProvider: React.FC<WhiteDateProviderProps> = ({
-                                                                        children
-                                                                    }) => {
+    children
+}) => {
 
     return (
         <ThemeProvider theme={theme}>

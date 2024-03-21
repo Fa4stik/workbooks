@@ -34,9 +34,6 @@ export const updateBounds = (
 
     if (parW >= imgSizesW) {
         const newRight = (parW - imgSizesW) / 2 + startX
-        // const newRight = -293
-        console.log('parW, imgSizesW, origImgW, startX, scale')
-        console.log(parW, imgSizesW, origImgW, startX, scale)
         setBounds(prevState => ({
             ...prevState,
             left: newRight,

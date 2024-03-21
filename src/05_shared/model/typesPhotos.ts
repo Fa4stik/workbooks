@@ -1,11 +1,10 @@
 export type TActivePhoto = {
-    chunkUid: string,
     photoUid: string
 }
 
-export type TChunks = {
-    [chunkUid: string]: TPhoto
-}
+/**
+ * photoUid = chunkId = photoUid
+ */
 
 export type TPhoto = {
     [photoUid: string]: {

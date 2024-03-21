@@ -1,16 +1,16 @@
 import {create} from "zustand";
 import {devtools, persist} from "zustand/middleware";
-import {TActivePhoto, TChunks, TPhoto} from "@/05_shared/model/typesPhotos";
+import {TActivePhoto, TPhoto} from "@/05_shared/model/typesPhotos";
 
 type State = {
     activePhoto: TActivePhoto
-    photos: TChunks
+    photos: TPhoto
 }
 
 type Actions = {
-    addChunk: (chunkUid: string) => void
-    addPhoto: (chunkUid: string, photo: TPhoto) => void
-    setActivePhoto: (activePhoto: TActivePhoto) => void
+    addPhoto: (photo: TPhoto) => void
+    setActivePhoto: (photoUid: string) => void
+    delPhoto: (photoUid: string) => void
 }
 
 export const usePhotosStore = create<State & Actions>()(
@@ -19,22 +19,30 @@ export const usePhotosStore = create<State & Actions>()(
             set => ({
                 activePhoto: {} as TActivePhoto,
                 photos: {},
-                addChunk: (chunkUid) => set(state => ({
-                    photos: Object.keys(state.photos).includes(chunkUid)
-                        ? {...state.photos, [chunkUid]: {}}
-                        : {...state.photos}
-                })),
-                addPhoto: (chunkUid, photo) => set(state => ({
-                    photos: {...state.photos,
-                        [chunkUid]: {
-                            ...state.photos[chunkUid],
-                            ...photo
-                        }
+                addPhoto: (photo) => set(state => ({
+                    photos: {
+                        ...state.photos,
+                        ...photo
+                    },
+                    activePhoto: {
+                        photoUid: Object.keys(photo)[0]
                     }
                 })),
-                setActivePhoto: (activePhoto) => set(() => ({
-                    activePhoto
-                }))
+                setActivePhoto: (photoUid) => set(() => ({
+                    activePhoto: {photoUid}
+                })),
+                delPhoto: (photoUid) => set(state => {
+                    const mutatePhotos = state.photos
+                    const mutateActivePhoto = state.activePhoto
+                    delete mutatePhotos[photoUid]
+                    if (mutateActivePhoto.photoUid === photoUid)
+                        mutateActivePhoto.photoUid = Object.keys(mutatePhotos)
+                            ?.at(-1) ?? '0'
+                    return {
+                        photos: mutatePhotos,
+                        activePhoto: mutateActivePhoto
+                    }
+                })
             }), {name: 'usePhotosStore'}
         )
     )
