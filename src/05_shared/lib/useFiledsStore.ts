@@ -14,6 +14,10 @@ type Actions = {
     setContent: (id: keyof typeof ENameField, content: string) => void
     setActivePage: (activePage: number) => void
     setActiveRow: (activeRow: number) => void
+    delRowById: (page: number, row: number) => void
+    delPageById: (page: number) => void
+    copyRowById: (page: number, row: number) => void
+    copyPageById: (page: number) => void
 }
 
 const storageName = 'useFieldsStore'
@@ -48,6 +52,35 @@ export const useFieldsStore = create<State & Actions>()(
                     updateFields[activePage].push(JSON.parse(JSON.stringify(initialFields)))
                     return {updateFields, activeRow}
                 }),
+                delRowById: (page, row) => page >= 0 && row > 0 && set(state => ({
+                    activeRow: state.activeRow === row ? row - 1 : state.activeRow,
+                    fields: [...state.fields.map((myPage, pId) =>
+                        page === pId
+                            ? [...state.fields[pId].filter((_, rId) =>
+                                rId !== row)]
+                            : myPage
+                    )],
+                })),
+                delPageById: (page) => page > 0 && set(state => ({
+                    activePage: page - 1,
+                    fields: [...state.fields.filter((_, pId) =>
+                        pId !== page)],
+                })),
+                copyRowById: (page, row) => set(state => ({
+                    fields: [...state.fields.map((mPage, pId) => pId === page
+                        ? [
+                            ...state.fields[page],
+                            JSON.parse(JSON.stringify({...state.fields[page][row]}))
+                        ]
+                        : mPage
+                    )]
+                })),
+                copyPageById: (page) => set(state => ({
+                    fields: [
+                        ...state.fields,
+                        JSON.parse(JSON.stringify([...state.fields[page]]))
+                    ]
+                }))
             }), {
                 name: storageName,
                 storage: createJSONStorage(() => storage)

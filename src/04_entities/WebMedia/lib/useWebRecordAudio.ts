@@ -38,17 +38,14 @@ export const useWebRecordAudio = () => {
                 mediaRecorder.current = new MediaRecorder(stream)
 
                 mediaRecorder.current.onstart = () => {
-                    console.log('start')
                     setIsRecording(true)
                 }
 
-                mediaRecorder.current.onstop = (e) => {
-                    console.log('stop')
+                mediaRecorder.current.onstop = () => {
                     setIsRecording(false)
                 }
 
                 mediaRecorder.current.ondataavailable = (e) => {
-                    console.log(e)
                     setIsRecording(false)
                     const audioBlob = new Blob([e.data], {type: 'audio/wav'})
                     setData(audioBlob)

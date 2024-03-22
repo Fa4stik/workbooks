@@ -7,5 +7,5 @@ type speechToTextResponse = {
 export const speechToText = (mediaContent: Blob) => {
     const formData = new FormData()
     formData.append('audio', mediaContent, "audio_record.wav")
-    return $api.post<speechToTextResponse>('/speech-to-text/', formData)
+    return $api.post<speechToTextResponse>('/speech2text/predict', formData)
 }

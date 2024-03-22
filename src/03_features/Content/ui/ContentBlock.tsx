@@ -6,8 +6,8 @@ import dayjs from "dayjs";
 import {BlueButton, GreenButton} from "@/04_entities/Buttons";
 import {useCreateExcelFromJson} from "@/04_entities/ApiData";
 import {useWebRecordAudio, useWebSpeechRecognition} from "@/04_entities/WebMedia";
-import {useSpeechToText} from "@/04_entities/ApiAiModels";
-import {useFieldsStore} from "@/05_shared/lib";
+import {useSpeechToText} from "@/04_entities/ApiSpeechToText";
+import {useFieldsStore, useKeysStore} from "@/05_shared/lib";
 
 type ContentBlockProps = {}
 
@@ -17,6 +17,8 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
 
     const {fields, setContent, activePage, activeRow,
         setActiveRow } = useFieldsStore()
+    const {keys: {ControlLeft}} =
+        useKeysStore()
 
     // const {isRecognizing, data: speechToTextData, isAvailable,
     //     startRecognize, stopRecognize} = useWebSpeechRecognition()
@@ -29,36 +31,23 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
         isSuccess: isSuccessSpeechToText} =
         useSpeechToText()
 
-
-    const [isPressedCltr, setIsPressedCltr] =
-        useState<boolean>(false)
     const [speechToTextData, setSpeechToTextData] =
         useState<string>('')
-
-    useEffect(() => {
-        window.onkeydown = e => {
-            setIsPressedCltr(e.key === 'Control')
-        }
-
-        window.onkeyup = e => {
-            setIsPressedCltr(e.key === 'Control' && false)
-        }
-    }, []);
 
     useEffect(() => {
         if (!isAvailable)
             return
 
-        if (isPressedCltr) {
+        if (!isRecording && ControlLeft.isPressed) {
             // startRecognize()
             startRecord()
         }
 
-        if (!isPressedCltr) {
+        if (!ControlLeft.isPressed) {
             // stopRecognize()
             stopRecord()
         }
-    }, [isPressedCltr]);
+    }, [ControlLeft]);
 
     useEffect(() => {
         if (audioBlob.size <= 0)

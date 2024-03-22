@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {RowsBlock} from "@/03_features/RowsBlock/ui/RowsBlock";
-import {useFieldsStore} from "@/05_shared/lib";
+import {useFieldsStore, useKeysStore} from "@/05_shared/lib";
 
 type ControlGridProps = {}
 
@@ -8,25 +8,40 @@ export const ControlGrid: React.FC<ControlGridProps> = ({
 
 }) => {
 
-    const {fields, setActivePage, setActiveRow, activePage, activeRow} =
+    const {fields, setActivePage, setActiveRow, copyRowById, copyPageById,
+        activePage, activeRow, delPageById, delRowById} =
         useFieldsStore()
+
+    const {keys: {ShiftLeft, KeyR, KeyP}} =
+        useKeysStore()
+
+    useEffect(() => {
+        if (ShiftLeft.isPressed && KeyR.isPressed) {
+            copyRowById(activePage, activeRow)
+        }
+
+        if (ShiftLeft.isPressed && KeyP.isPressed) {
+            copyPageById(activePage)
+        }
+    }, [ShiftLeft, KeyR, KeyP]);
 
     return (
         <div className="flex w-1/6 white-border-l rounded-xl divide-x-2 divide-solid">
             <RowsBlock title={'Номер строки'}
-                       setGrid={setActiveRow}
+                       setRow={setActiveRow}
                        activeId={activeRow}
-                       addGrid={(e) => {
+                       delRow={delRowById}
+                       addGrid={() => {
                            setActiveRow(fields[activePage].length)
                        }}
                        indexes={fields[activePage].map((_, id) => id)}/>
             <RowsBlock title={'Номер листа'}
                        activeId={activePage}
-                       setGrid={(page) => {
-                           setActiveRow(0)
-                           setActivePage(page)
-                       }}
-                       addGrid={(e) => {
+                       setPage={setActivePage}
+                       delPage={delPageById}
+                       setRow={setActiveRow}
+                       delRow={delRowById}
+                       addGrid={() => {
                            setActiveRow(0)
                            setActivePage(fields.length)
                        }}
