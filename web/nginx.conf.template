@@ -13,6 +13,15 @@ http {
         root /usr/share/nginx/html/;
         index index.html;
 
+        location /api {
+            proxy_pass http://document_filling_tool:8000;
+            proxy_set_header Host ${NGINX_SERVER_PATH}:${NGINX_SERVER_PORT_HTTP};
+            proxy_set_header Content-Type $http_content_type;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
         location / {
             include  /etc/nginx/mime.types;
             try_files $uri $uri/ /index.html;
@@ -35,6 +44,15 @@ http {
         ssl_dhparam /etc/nginx/ssl/carrotocr.pem;
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers HIGH:!aNULL:!MD5;
+
+        location /api {
+            proxy_pass https://document_filling_tool:8000;
+            proxy_set_header Host ${NGINX_SERVER_PATH}:${NGINX_SERVER_PORT_HTTPS};
+            proxy_set_header Content-Type $http_content_type;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
 
         location / {
             include  /etc/nginx/mime.types;
