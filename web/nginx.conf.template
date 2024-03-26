@@ -46,7 +46,7 @@ http {
         ssl_ciphers HIGH:!aNULL:!MD5;
 
         location /api {
-            proxy_pass https://document_filling_tool:8000;
+            proxy_pass http://document_filling_tool:8000;
             proxy_set_header Host ${NGINX_SERVER_PATH}:${NGINX_SERVER_PORT_HTTPS};
             proxy_set_header Content-Type $http_content_type;
             proxy_set_header X-Real-IP $remote_addr;

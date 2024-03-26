@@ -18,6 +18,7 @@ type Actions = {
     delPageById: (page: number) => void
     copyRowById: (page: number, row: number) => void
     copyPageById: (page: number) => void
+    resetFields: () => void
 }
 
 const storageName = 'useFieldsStore'
@@ -52,20 +53,38 @@ export const useFieldsStore = create<State & Actions>()(
                     updateFields[activePage].push(JSON.parse(JSON.stringify(initialFields)))
                     return {updateFields, activeRow}
                 }),
-                delRowById: (page, row) => page >= 0 && row > 0 && set(state => ({
-                    activeRow: state.activeRow === row ? row - 1 : state.activeRow,
-                    fields: [...state.fields.map((myPage, pId) =>
-                        page === pId
-                            ? [...state.fields[pId].filter((_, rId) =>
-                                rId !== row)]
-                            : myPage
-                    )],
-                })),
-                delPageById: (page) => page > 0 && set(state => ({
-                    activePage: page - 1,
-                    fields: [...state.fields.filter((_, pId) =>
-                        pId !== page)],
-                })),
+                delRowById: (page, row) => set(state => state.fields[page].length > 1
+                    ? {
+                        activeRow: state.activeRow === row
+                            ? Math.max(0, row-1)
+                            : state.activeRow,
+                        fields: [...state.fields.map((myPage, pId) =>
+                            page === pId
+                                ? [...state.fields[pId].filter((_, rId) =>
+                                    rId !== row)]
+                                : myPage
+                        )]}
+                    : {
+                        fields: [...state.fields.map((myPage, pId) =>
+                            page === pId
+                                ? [JSON.parse(JSON.stringify(initialFields))]
+                                : myPage
+                        )]
+                    }
+                ),
+                delPageById: (page) => set(state => state.fields.length > 1
+                    ? {
+                        activePage: Math.max(0, page - 1),
+                        fields: [...state.fields.filter((_, pId) =>
+                            pId !== page)]}
+                    : {
+                        fields: [
+                            [JSON.parse(JSON.stringify(initialFields))]
+                        ],
+                        activePage: 0,
+                        activeRow: 0,
+                    }
+                ),
                 copyRowById: (page, row) => set(state => ({
                     fields: [...state.fields.map((mPage, pId) => pId === page
                         ? [
@@ -80,6 +99,13 @@ export const useFieldsStore = create<State & Actions>()(
                         ...state.fields,
                         JSON.parse(JSON.stringify([...state.fields[page]]))
                     ]
+                })),
+                resetFields: () => set(() => ({
+                    fields: [
+                        [JSON.parse(JSON.stringify(initialFields))]
+                    ],
+                    activePage: 0,
+                    activeRow: 0,
                 }))
             }), {
                 name: storageName,

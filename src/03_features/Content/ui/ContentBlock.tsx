@@ -16,7 +16,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
 }) => {
 
     const {fields, setContent, activePage, activeRow,
-        setActiveRow } = useFieldsStore()
+        setActiveRow, resetFields } = useFieldsStore()
     const {keys: {ControlLeft}} =
         useKeysStore()
 
@@ -80,7 +80,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
             <div className="flex flex-wrap gap-x-6 gap-y-4">
                 {Object.entries(fields[activePage][activeRow]).map(([fKey, field], id, array) =>
                     field.type === ETypeField.Input && (
-                        <WhiteTextField label={field.name} key={fKey} id={fKey}
+                        <WhiteTextField label={field.name} key={fKey+activeRow+activePage} id={fKey}
                                         // isRecording={isRecognizing}
                                         isRecording={isRecording}
                                         value={field.content ?? ''}
@@ -100,7 +100,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
             <div className="flex flex-wrap gap-x-6 gap-y-4">
                 {Object.entries(fields[activePage][activeRow]).map(([fKey, field]) =>
                     field.type === ETypeField.Date && (
-                        <WhiteDatePicker label={field.name} key={fKey+activePage}
+                        <WhiteDatePicker label={field.name} key={fKey+activeRow+activePage}
                                          onChange={(e) =>
                                              setContent(fKey as keyof typeof ENameField, e?.format('DD.MM.YYYY') ?? '')}
                                          value={dayjs(field.content ?? new Date(), 'DD.MM.YYYY')}
@@ -110,7 +110,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
             <div className="flex flex-wrap gap-x-6 gap-y-4">
                 {Object.entries(fields[activePage][activeRow]).map(([fKey, field], id, array) =>
                     field.type === ETypeField.Textarea && (
-                        <WhiteTextField label={field.name} key={fKey} multiline
+                        <WhiteTextField label={field.name} key={fKey+activeRow+activePage} multiline
                                         id={fKey}
                                         // isRecording={isRecognizing}
                                         isRecording={isRecording}
@@ -132,9 +132,9 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
                 <GreenButton onClick={handleDownloadExcel}>
                     Выгрузить</GreenButton>
                 <BlueButton onClick={() => {
-                    setActiveRow(activeRow + 1)
+                    resetFields()
                 }}>
-                    Следующий</BlueButton>
+                    Новый документ</BlueButton>
             </div>
         </div>
     );
