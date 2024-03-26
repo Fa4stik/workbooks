@@ -28,6 +28,7 @@ export const ControlGrid: React.FC<ControlGridProps> = ({
     return (
         <div className="flex w-1/6 white-border-l rounded-xl divide-x-2 divide-solid">
             <RowsBlock title={'Номер строки'}
+                       tip={'Для дублирования текущей строки нажмите Shift + R'}
                        setRow={setActiveRow}
                        activeId={activeRow}
                        delRow={delRowById}
@@ -36,6 +37,7 @@ export const ControlGrid: React.FC<ControlGridProps> = ({
                        }}
                        indexes={fields[activePage].map((_, id) => id)}/>
             <RowsBlock title={'Номер листа'}
+                       tip={'Для дублирования текущего листа нажмите Shift + P'}
                        activeId={activePage}
                        setPage={setActivePage}
                        delPage={delPageById}

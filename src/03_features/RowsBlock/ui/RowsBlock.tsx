@@ -4,6 +4,7 @@ import {useFieldsStore} from "@/05_shared/lib";
 
 type RowsBlockProps = {
     title: string
+    tip: string
     activeId: number
     indexes: Array<number>
     setPage?: (page: number) => void
@@ -15,6 +16,7 @@ type RowsBlockProps = {
 
 export const RowsBlock: React.FC<RowsBlockProps> = ({
     title,
+    tip,
     indexes,
     setRow,
     setPage,
@@ -29,7 +31,8 @@ export const RowsBlock: React.FC<RowsBlockProps> = ({
     return (
         <div className="flex-grow flex flex-col justify-start text-mainWhite text-center
         font-inter font-semibold text-sm divide-y-2 divide-solid">
-            <span className="p-1">{title}</span>
+            <span className="p-1" title={tip}>
+                {title}</span>
             {indexes.map(index => (
                 <div key={index + title} className={`flex items-center justify-center relative cursor-pointer
                 ${activeId === index && 'bg-mainWhite/[0.3]'}`}
@@ -47,7 +50,7 @@ export const RowsBlock: React.FC<RowsBlockProps> = ({
                         {index + 1}
                     </button>
                     {index === activeId && (
-                        <button className="absolute right-2 top-1/2 -translate-y-1/2 cursor-no-drop"
+                        <button className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                                 onClick={(e) => {
                                     e.stopPropagation()
 
