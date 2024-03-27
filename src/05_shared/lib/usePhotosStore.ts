@@ -11,6 +11,7 @@ type Actions = {
     addPhoto: (photo: TPhoto) => void
     setActivePhoto: (photoUid: string) => void
     delPhoto: (photoUid: string) => void
+    importContent: (state: State) => void
 }
 
 export const usePhotosStore = create<State & Actions>()(
@@ -42,7 +43,10 @@ export const usePhotosStore = create<State & Actions>()(
                         photos: mutatePhotos,
                         activePhoto: mutateActivePhoto
                     }
-                })
+                }),
+                importContent: (state) => set(() => ({
+                    ...state
+                }))
             }), {name: 'usePhotosStore'}
         )
     )

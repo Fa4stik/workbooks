@@ -19,6 +19,7 @@ type Actions = {
     copyRowById: (page: number, row: number) => void
     copyPageById: (page: number) => void
     resetFields: () => void
+    importContent: (state: State) => void
 }
 
 const storageName = 'useFieldsStore'
@@ -106,6 +107,9 @@ export const useFieldsStore = create<State & Actions>()(
                     ],
                     activePage: 0,
                     activeRow: 0,
+                })),
+                importContent: (state) => set(() => ({
+                    ...state
                 }))
             }), {
                 name: storageName,

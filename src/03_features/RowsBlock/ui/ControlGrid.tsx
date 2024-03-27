@@ -26,7 +26,7 @@ export const ControlGrid: React.FC<ControlGridProps> = ({
     }, [ShiftLeft, KeyR, KeyP]);
 
     return (
-        <div className="flex w-1/6 white-border-l rounded-xl divide-x-2 divide-solid">
+        <div className="flex w-1/6 white-border-l rounded-xl divide-x-2 divide-solid select-none">
             <RowsBlock title={'Номер строки'}
                        tip={'Для дублирования текущей строки нажмите Shift + R'}
                        setRow={setActiveRow}

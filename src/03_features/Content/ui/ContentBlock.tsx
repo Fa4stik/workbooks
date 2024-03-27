@@ -1,22 +1,37 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {WhiteTextField} from "@/04_entities/Inputs";
-import {ENameField, ETypeField} from "@/05_shared/model";
+import {ENameField, ETypeField, TActivePhoto, TFields} from "@/05_shared/model";
 import {WhiteDatePicker} from "@/04_entities/DatePicker";
 import dayjs from "dayjs";
-import {BlueButton, GreenButton} from "@/04_entities/Buttons";
+import {BlueButton, GreenButton, RedButton} from "@/04_entities/Buttons";
 import {useCreateExcelFromJson} from "@/04_entities/ApiData";
 import {useWebRecordAudio, useWebSpeechRecognition} from "@/04_entities/WebMedia";
 import {useSpeechToText} from "@/04_entities/ApiSpeechToText";
-import {useFieldsStore, useKeysStore} from "@/05_shared/lib";
+import {useFieldsStore, useKeysStore, usePhotosStore} from "@/05_shared/lib";
+import {TPhoto} from "@/05_shared/model/typesPhotos";
 
 type ContentBlockProps = {}
+
+type TContent = {
+    useFieldStore: {
+        fields: TFields[][]
+        activeRow: number,
+        activePage: number
+    },
+    usePhotoStore: {
+        photos: TPhoto,
+        activePhoto: TActivePhoto
+    }
+}
 
 export const ContentBlock: React.FC<ContentBlockProps> = ({
 
 }) => {
 
     const {fields, setContent, activePage, activeRow,
-        setActiveRow, resetFields } = useFieldsStore()
+        setActiveRow, resetFields, importContent: importFields } = useFieldsStore()
+    const {photos, activePhoto, setActivePhoto, importContent: importPhotos} =
+        usePhotosStore()
     const {keys: {ControlLeft}} =
         useKeysStore()
 
@@ -30,6 +45,9 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
     const {mutate: mutateSpeechToText, data: dataSpeechToText,
         isSuccess: isSuccessSpeechToText} =
         useSpeechToText()
+
+    const inputImportRef =
+        useRef<HTMLInputElement>(null)
 
     const [speechToTextData, setSpeechToTextData] =
         useState<string>('')
@@ -73,6 +91,43 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
 
     const handleDownloadExcel = () => {
         mutateConvertToExcel(fields)
+    };
+
+    const handleExportContent = () => {
+        const content: TContent = {
+            useFieldStore: {
+                fields,
+                activeRow,
+                activePage
+            },
+            usePhotoStore: {
+                photos,
+                activePhoto
+            }
+        }
+
+        const anchor = document.createElement('a')
+        anchor.download = 'exportContent'
+        const url = URL.createObjectURL(new Blob([JSON.stringify(content)], {type: 'application/json'}))
+        anchor.href = url
+        document.body.appendChild(anchor)
+        anchor.click()
+        document.body.removeChild(anchor)
+        URL.revokeObjectURL(url)
+    };
+
+    const handleImportContent = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length !== 1)
+            return
+
+        e.target.files[0]
+            .text()
+            .then(textFromJSON => {
+                const {useFieldStore, usePhotoStore} =
+                    JSON.parse(textFromJSON) as TContent
+                importFields(useFieldStore)
+                importPhotos(usePhotoStore)
+            })
     };
 
     return (
@@ -128,13 +183,23 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
                         />
                 ))}
             </div>
-            <div className="flex justify-end items-end gap-6">
-                <GreenButton onClick={handleDownloadExcel}>
-                    Выгрузить</GreenButton>
-                <BlueButton onClick={() => {
-                    resetFields()
-                }}>
-                    Новый документ</BlueButton>
+            <div className="flex justify-between">
+                <div className="flex justify-start items-start gap-6">
+                    <RedButton onClick={handleExportContent}>
+                        Экспорт</RedButton>
+                    <input type="file" ref={inputImportRef} onChange={handleImportContent}
+                           className="hidden" accept="application/json"/>
+                    <BlueButton onClick={() => inputImportRef.current && inputImportRef.current.click()}>
+                        Импорт</BlueButton>
+                </div>
+                <div className="flex justify-end items-end gap-6">
+                    <GreenButton onClick={handleDownloadExcel}>
+                        Выгрузить</GreenButton>
+                    <BlueButton onClick={() => {
+                        resetFields()
+                    }}>
+                        Новый документ</BlueButton>
+                </div>
             </div>
         </div>
     );
